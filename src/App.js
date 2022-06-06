@@ -9,17 +9,27 @@ class App extends Component {
     // instantiate state
     this.state = {
       monsters: [],
+      currentSearchQuery: "",
     };
   }
 
   getMonsters() {
     fetch_data(JSON_PLACEHOLDER_API_URL)
       .then((apiResponse) =>
-        this.setState(() => {
-          return { monsters: apiResponse };
+        this.setState({
+          monsters: apiResponse,
+          monstersBeingDisplay: apiResponse,
         })
       )
       .catch((err) => console.error(err));
+  }
+
+  getMonstersToDisplay() {
+    return this.state.monsters.filter((monster) =>
+      monster.name
+        ?.toLowerCase()
+        .includes(this.state.currentSearchQuery?.toLowerCase())
+    );
   }
 
   componentDidMount() {
@@ -29,9 +39,20 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        {this.state.monsters.map((monster) => (
-          <h1 key={monster.id}>{monster.name}</h1>
-        ))}
+        <input
+          className="search-box"
+          type="search"
+          placeholder="search monsters"
+          onChange={(event) =>
+            this.setState({
+              currentSearchQuery: event.target.value,
+            })
+          }
+        />
+        {this.state?.monsters &&
+          this.getMonstersToDisplay().map((monster) => (
+            <h1 key={monster.id}>{monster.name}</h1>
+          ))}
       </div>
     );
   }
