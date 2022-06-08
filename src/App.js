@@ -3,6 +3,9 @@ import "./App.css";
 import { fetch_data } from "./helpers";
 import { JSON_PLACEHOLDER_API_URL } from "./config";
 
+import CardList from "./components/card-list/card-list-component";
+import SearchBox from "./components/search-box/search-box-component";
+
 class App extends Component {
   constructor() {
     super();
@@ -36,23 +39,25 @@ class App extends Component {
     this.getMonsters();
   }
 
+  searchEventHandler = (event) => {
+    this.setState({
+      currentSearchQuery: event.target.value,
+    });
+  };
+
   render() {
+    const monstersToDisplay = this.state?.monsters
+      ? this.getMonstersToDisplay()
+      : [];
+
     return (
       <div className="App">
-        <input
-          className="search-box"
-          type="search"
-          placeholder="search monsters"
-          onChange={(event) =>
-            this.setState({
-              currentSearchQuery: event.target.value,
-            })
-          }
-        />
-        {this.state?.monsters &&
-          this.getMonstersToDisplay().map((monster) => (
-            <h1 key={monster.id}>{monster.name}</h1>
-          ))}
+        <h1 className="app-title">Monsters Rolodex</h1>
+        <SearchBox
+        className='search-box'
+        placeholder='search monsters'
+        searchEventHandler={this.searchEventHandler} />
+        <CardList monsters={monstersToDisplay} />
       </div>
     );
   }
